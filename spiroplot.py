@@ -36,11 +36,12 @@ def spiro_sum(theta, theta_ratios, r_vals):
 if __name__ == '__main__':
     N = 10000 #number of points for full theta array
     NUM_LOOPS = 25 #how many times to loop round
+    NUM_PHASORS = 3
 
     theta_arr = np.linspace(0, NUM_LOOPS * 2 * np.pi, N)
 
-    theta_ratios_arr = np.array([1.0, 1.3 * np.pi])
-    r_vals_arr = np.array([1.0, 0.7])
+    theta_ratios_arr = np.ones(NUM_PHASORS)
+    r_vals_arr = np.ones(NUM_PHASORS)
 
     complex_spirograph = spiro_sum(theta_arr, theta_ratios_arr, r_vals_arr)
 
@@ -48,6 +49,42 @@ if __name__ == '__main__':
     line, = ax.plot(np.real(complex_spirograph), np.imag(complex_spirograph), lw=2)
     ax.set_xlabel('Real component')
     ax.set_ylabel('Imaginary component')
+    ax.set_aspect('equal', 'box')
+
+    slider_fig, fig_axes = plt.subplots(nrows=2 * NUM_PHASORS)
+
+    sliders = [None] * 2 * NUM_PHASORS
+    for i in range(NUM_PHASORS):
+        sliders[2 * i] = Slider(
+            ax=fig_axes[2 * i],
+            label=f'Theta {i + 1}',
+            valmin=0.1,
+            valmax=10.0,
+            valinit=1.0
+        )
+
+        sliders[(2 * i) + 1] = Slider(
+            ax=fig_axes[(2 * i) + 1],
+            label=f'Radius {i + 1}',
+            valmin=0.0,
+            valmax=5.0,
+            valinit=1.0
+        )
+
+
+    def update(val):
+        for i in range(NUM_PHASORS):
+            theta_ratios_arr[i] = sliders[2 * i].val
+            r_vals_arr[i] = sliders[(2 * i) + 1].val
+
+        complex_spirograph = spiro_sum(theta_arr, theta_ratios_arr, r_vals_arr)
+        line.set_xdata(np.real(complex_spirograph))
+        line.set_ydata(np.imag(complex_spirograph))
+        fig.canvas.draw_idle()
+
+    for slider in sliders:
+        slider.on_changed(update)
+
 
     plt.show()
 
