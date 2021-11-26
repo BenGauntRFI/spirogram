@@ -59,7 +59,7 @@ if __name__ == '__main__':
             ax=fig_axes[2 * i],
             label=f'Theta {i + 1}',
             valmin=0.1,
-            valmax=10.0,
+            valmax=1.9,
             valinit=1.0
         )
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             ax=fig_axes[(2 * i) + 1],
             label=f'Radius {i + 1}',
             valmin=0.0,
-            valmax=5.0,
+            valmax=2.0,
             valinit=1.0
         )
 
@@ -81,6 +81,12 @@ if __name__ == '__main__':
         line.set_xdata(np.real(complex_spirograph))
         line.set_ydata(np.imag(complex_spirograph))
         fig.canvas.draw_idle()
+
+    def on_close(event):
+        plt.close('all')
+
+    fig.canvas.mpl_connect('close_event', on_close)
+    slider_fig.canvas.mpl_connect('close_event', on_close)
 
     for slider in sliders:
         slider.on_changed(update)
